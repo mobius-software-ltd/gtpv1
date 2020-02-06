@@ -1,0 +1,67 @@
+package com.mobius.software.telco.protocols.gtp.impl.headers.v2;
+/*Mobius Software LTD
+Copyright 2019, Mobius Software LTD and individual contributors
+by the @authors tag.
+
+This program is free software: you can redistribute it and/or modify
+under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation; either version 3 of
+the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>*/
+import io.netty.buffer.ByteBuf;
+
+import com.mobius.software.telco.protocols.gtp.api.exceptions.MissingArgumentException;
+import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2ElementType;
+import com.mobius.software.telco.protocols.gtp.api.headers.v2.HandoverIndicator;
+import com.mobius.software.telco.protocols.gtp.api.headers.v2.HandoverType;
+
+public class HandoverIndicatorImpl extends AbstractTLV2 implements HandoverIndicator 
+{
+	private HandoverType handoverType;
+	
+	@Override
+	public GTP2ElementType getElementType() 
+	{
+		return GTP2ElementType.HANDOVER_INDICATOR;
+	}
+
+	@Override
+	public Integer getLength() 
+	{
+		return 1;
+	}
+
+	@Override
+	protected void writeValue(ByteBuf buffer) throws MissingArgumentException 
+	{
+		if(handoverType!=null)
+			buffer.writeByte(handoverType.getValue() & 0x0F);
+		else
+			throw new MissingArgumentException("Handover type is not set");
+	}
+
+	@Override
+	protected void readValue(ByteBuf buffer, Integer length) 
+	{
+		handoverType=HandoverType.fromInt(buffer.readByte() & 0x0F);
+	}
+
+	@Override
+	public HandoverType getHandoverType() 
+	{
+		return handoverType;
+	}
+
+	@Override
+	public void setHandoverType(HandoverType handoverType) 
+	{
+		this.handoverType=handoverType;
+	}
+}
