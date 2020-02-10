@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ContextAcknowledgeBearerContext;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FTEID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2MessageType;
@@ -35,7 +35,7 @@ public class ContextAcknowledgeImpl extends AbstractGTP2Message implements Conte
 	Cause cause;
 	Indication indication;
 	FTEID forwardingFTEID;
-	BearerContext bearerContext;
+	List<ContextAcknowledgeBearerContext> bearerContext;
 	NodeNumber sgsnNodeNumber;
 	NodeNumber mtNumberForMTSMS;
 	NodeIdentifier sgsnIdentifierForMTSMS;
@@ -96,7 +96,10 @@ public class ContextAcknowledgeImpl extends AbstractGTP2Message implements Conte
 				indication=(Indication)tlv;
 				break;
 			case BEARER_CONTEXT:
-				bearerContext=(BearerContext)tlv;
+				if(bearerContext==null)
+					bearerContext=new ArrayList<ContextAcknowledgeBearerContext>();
+				
+				bearerContext.add((ContextAcknowledgeBearerContext)tlv);
 				break;
 			case PRIVATE_EXTENTION:
 				if(privateExtentions==null)
@@ -124,8 +127,8 @@ public class ContextAcknowledgeImpl extends AbstractGTP2Message implements Conte
 		if(forwardingFTEID!=null)
 			output.add(forwardingFTEID);
 		
-		if(bearerContext!=null)
-			output.add(bearerContext);
+		if(bearerContext!=null && bearerContext.size()>0)
+			output.addAll(bearerContext);
 		
 		if(sgsnNodeNumber!=null)
 			output.add(sgsnNodeNumber);
@@ -200,15 +203,18 @@ public class ContextAcknowledgeImpl extends AbstractGTP2Message implements Conte
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<ContextAcknowledgeBearerContext> getBearerContext() 
 	{
 		return this.bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<ContextAcknowledgeBearerContext> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(ContextAcknowledgeBearerContext curr:bearerContext)
+				curr.setInstance(0);	
+		
 		this.bearerContext=bearerContext;
 	}
 

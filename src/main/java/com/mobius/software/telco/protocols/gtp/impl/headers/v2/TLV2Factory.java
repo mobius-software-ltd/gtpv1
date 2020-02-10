@@ -16,14 +16,41 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
+import com.mobius.software.telco.protocols.gtp.api.exceptions.InvalidMessageException;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2ElementType;
+import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2MessageType;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.TLV2;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ContextAcknowledgeBearerContextImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.CreateBearerRequestBearerContextToBeCreatedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.CreateBearerResponseBearerContextToBeCreatedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.CreateIndirectDataForwardingTunnelRequestBearerContextImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.CreateIndirectDataForwardingTunnelResponseBearerContextImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.CreateSessionRequestBearerContextToBeCreatedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.CreateSessionRequestBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.CreateSessionResponseBearerContextToBeCreatedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.CreateSessionResponseBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.DeleteBearerCommandBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.DeleteBearerFailureIndicationBearerContextImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.DeleteBearerRequestBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.DeleteBearerResponseBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ForwardRelocationResponseBearerContextImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyAccessBearerRequestBearerContextToBeModifiedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyAccessBearerRequestBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyAccessBearerResponseBearerContextToBeModifiedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyAccessBearerResponseBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyBearerCommandBearerContextToBeModifiedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyBearerRequestBearerContextToBeModifiedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyBearerRequestBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyBearerResponseBearerContextToBeModifiedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.ModifyBearerResponseBearerContextToBeRemovedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.UpdateBearerRequestBearerContextToBeModifiedImpl;
+import com.mobius.software.telco.protocols.gtp.impl.bcontexts.v2.UpdateBearerResponseBearerContextToBeModifiedImpl;
 
 import io.netty.buffer.ByteBuf;
 
 public class TLV2Factory 
 {
-	public static TLV2 decode(ByteBuf buffer) throws GTPParseException
+	public static TLV2 decode(GTP2MessageType messageType,ByteBuf buffer) throws GTPParseException
 	{
 		int type=(buffer.readByte() & 0x0FF);
 		GTP2ElementType elementType=GTP2ElementType.fromInt(type);
@@ -61,7 +88,107 @@ public class TLV2Factory
 				result=new APNRestrictionIImpl();
 				break;
 			case BEARER_CONTEXT:
-				result=new BearerContextImpl();
+				buffer.markReaderIndex();
+				if(buffer.readableBytes()<3)
+					throw new InvalidMessageException("not enough bytes found in message");
+				
+				buffer.readByte();
+				buffer.readByte();
+				int instance=buffer.readByte() & 0x0F;
+				buffer.resetReaderIndex();
+				
+				switch(messageType)
+				{
+					case CONTEXT_ACKNOWLEDGE:
+						result=new ContextAcknowledgeBearerContextImpl();
+						break;
+					case CREATE_BEARER_REQUEST:
+						result=new CreateBearerRequestBearerContextToBeCreatedImpl();
+						break;
+					case CREATE_BEARER_RESPONSE:
+						result=new CreateBearerResponseBearerContextToBeCreatedImpl();
+						break;
+					case CREATE_INDIRECT_DATA_FORWARDING_TUNNEL_REQUEST:
+						result=new CreateIndirectDataForwardingTunnelRequestBearerContextImpl();
+						break;
+					case CREATE_INDIRECT_DATA_FORWARDING_TUNNEL_RESPONSE:
+						result=new CreateIndirectDataForwardingTunnelResponseBearerContextImpl();
+						break;
+					case CREATE_SESSION_REQUEST:
+						if(instance==0)
+							result=new CreateSessionRequestBearerContextToBeCreatedImpl();
+						else if(instance==1)
+							result=new CreateSessionRequestBearerContextToBeRemovedImpl();
+						else
+							throw new GTPParseException("Unknown TLV received,type:" + elementType + ",instance:" + instance);
+						break;
+					case CREATE_SESSION_RESPONSE:
+						if(instance==0)
+							result=new CreateSessionResponseBearerContextToBeCreatedImpl();
+						else if(instance==1)
+							result=new CreateSessionResponseBearerContextToBeRemovedImpl();
+						else
+							throw new GTPParseException("Unknown TLV received,type:" + elementType + ",instance:" + instance);
+						break;
+					case DELETE_BEARER_COMMAND:
+						result=new DeleteBearerCommandBearerContextToBeRemovedImpl();
+						break;
+					case DELETE_BEARER_FAILURE_INDICATION:
+						result=new DeleteBearerFailureIndicationBearerContextImpl();
+						break;
+					case DELETE_BEARER_REQUEST:
+						result=new DeleteBearerRequestBearerContextToBeRemovedImpl();
+						break;
+					case DELETE_BEARER_RESPONSE:
+						result=new DeleteBearerResponseBearerContextToBeRemovedImpl();
+						break;
+					case FORWARD_RELOCATION_RESPONSE:
+						result=new ForwardRelocationResponseBearerContextImpl();
+						break;
+					case MODIFY_ACCESS_BEARER_REQUEST:
+						if(instance==0)
+							result=new ModifyAccessBearerRequestBearerContextToBeModifiedImpl();
+						else if(instance==1)
+							result=new ModifyAccessBearerRequestBearerContextToBeRemovedImpl();
+						else
+							throw new GTPParseException("Unknown TLV received,type:" + elementType + ",instance:" + instance);
+						break;
+					case MODIFY_ACCESS_BEARER_RESPONSE:
+						if(instance==0)
+							result=new ModifyAccessBearerResponseBearerContextToBeModifiedImpl();
+						else if(instance==1)
+							result=new ModifyAccessBearerResponseBearerContextToBeRemovedImpl();
+						else
+							throw new GTPParseException("Unknown TLV received,type:" + elementType + ",instance:" + instance);
+						break;
+					case MODIFY_BEARER_COMMAND:
+						result=new ModifyBearerCommandBearerContextToBeModifiedImpl();
+						break;
+					case MODIFY_BEARER_REQUEST:
+						if(instance==0)
+							result=new ModifyBearerRequestBearerContextToBeModifiedImpl();
+						else if(instance==1)
+							result=new ModifyBearerRequestBearerContextToBeRemovedImpl();
+						else
+							throw new GTPParseException("Unknown TLV received,type:" + elementType + ",instance:" + instance);
+						break;
+					case MODIFY_BEARER_RESPONSE:
+						if(instance==0)
+							result=new ModifyBearerResponseBearerContextToBeModifiedImpl();
+						else if(instance==1)
+							result=new ModifyBearerResponseBearerContextToBeRemovedImpl();
+						else
+							throw new GTPParseException("Unknown TLV received,type:" + elementType + ",instance:" + instance);
+						break;
+					case UPDATE_BEARER_REQUEST:
+						result=new UpdateBearerRequestBearerContextToBeModifiedImpl();
+						break;
+					case UPDDATE_BEARER_RESPONSE:
+						result=new UpdateBearerResponseBearerContextToBeModifiedImpl();
+						break;
+					default:
+						throw new GTPParseException("Unknown TLV received,type:" + elementType);
+				}
 				break;
 			case BEARER_FLAGS:
 				result=new BearerFlagsImpl();
@@ -498,7 +625,7 @@ public class TLV2Factory
 				result=new WLANOffloadabilityIndicationImpl();
 				break;
 			default:
-				break;			
+				break;	
 		}
 		
 		if(result!=null)

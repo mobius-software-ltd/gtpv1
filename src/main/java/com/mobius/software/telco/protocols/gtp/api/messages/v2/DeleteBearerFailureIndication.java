@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.DeleteBearerFailureIndicationBearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Indication;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.OverloadControlInformation;
@@ -30,9 +30,9 @@ public interface DeleteBearerFailureIndication extends GTP2Message
 	
 	void setCause(Cause cause);
 	
-	BearerContext getBearerContext();
+	List<DeleteBearerFailureIndicationBearerContext> getBearerContext();
 	
-	void setBearerContext(BearerContext bearerContext);
+	void setBearerContext(List<DeleteBearerFailureIndicationBearerContext> bearerContext);
 	
 	Recovery getRecovery();
 	

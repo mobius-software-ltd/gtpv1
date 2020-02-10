@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateBearerResponseBearerContextToBeCreated;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FContainer;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FQCSID;
@@ -41,7 +41,7 @@ import com.mobius.software.telco.protocols.gtp.api.messages.v2.CreateBearerRespo
 public class CreateBearerResponseImpl extends AbstractGTP2Message implements CreateBearerResponse
 {
 	Cause cause;
-	BearerContext bearerContext;
+	List<CreateBearerResponseBearerContextToBeCreated> bearerContext;
 	Recovery recovery;
 	FQCSID mmeFQCSID;
 	FQCSID sgwFQCSID;
@@ -95,7 +95,10 @@ public class CreateBearerResponseImpl extends AbstractGTP2Message implements Cre
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContext=(BearerContext)tlv;
+						if(bearerContext==null)
+							bearerContext=new ArrayList<CreateBearerResponseBearerContextToBeCreated>();
+						
+						bearerContext.add((CreateBearerResponseBearerContextToBeCreated)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -208,10 +211,10 @@ public class CreateBearerResponseImpl extends AbstractGTP2Message implements Cre
 		if(cause!=null)
 			output.add(cause);
 		
-		if(bearerContext==null)
+		if(bearerContext==null || bearerContext.size()==0)
 			throw new GTPParseException("Bearer Context not set");
 		
-		output.add(bearerContext);
+		output.addAll(bearerContext);
 		
 		if(recovery!=null)
 			output.add(recovery);
@@ -334,15 +337,18 @@ public class CreateBearerResponseImpl extends AbstractGTP2Message implements Cre
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<CreateBearerResponseBearerContextToBeCreated> getBearerContext() 
 	{
 		return bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<CreateBearerResponseBearerContextToBeCreated> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(CreateBearerResponseBearerContextToBeCreated curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 

@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ForwardRelocationResponseBearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FCause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FContainer;
@@ -43,17 +43,17 @@ public interface ForwardRelocationResponse extends GTP2Message
 	
 	void setIndication(Indication indication);
 	
-	BearerContext getListOfSetupBearers();
+	List<ForwardRelocationResponseBearerContext> getListOfSetupBearers();
 	
-	void setListOfSetupBearers(BearerContext bearerContext);
+	void setListOfSetupBearers(List<ForwardRelocationResponseBearerContext> bearerContext);
 	
-	BearerContext getListOfRABs();
+	List<ForwardRelocationResponseBearerContext> getListOfRABs();
 	
-	void setListOfSetupRABs(BearerContext bearerContext);
+	void setListOfSetupRABs(List<ForwardRelocationResponseBearerContext> bearerContext);
 	
-	BearerContext getListOfSetupPFCs();
+	List<ForwardRelocationResponseBearerContext> getListOfSetupPFCs();
 	
-	void setListOfSetupPFCs(BearerContext bearerContext);
+	void setListOfSetupPFCs(List<ForwardRelocationResponseBearerContext> bearerContext);
 	
 	FCause getS1APCause();
 	
@@ -115,9 +115,9 @@ public interface ForwardRelocationResponse extends GTP2Message
 	
 	void setMMEIdentifierForMTSMS(NodeIdentifier mmeIdentifier);	
 	
-	BearerContext getSetupBearersForSCEFPDNConnections();
+	List<ForwardRelocationResponseBearerContext> getSetupBearersForSCEFPDNConnections();
 	
-	void setSetupBearersForSCEFPDNConnections(BearerContext bearerContext);
+	void setSetupBearersForSCEFPDNConnections(List<ForwardRelocationResponseBearerContext> bearerContext);
 	
 	List<PrivateExtention> getPrivateExtentions();
 	

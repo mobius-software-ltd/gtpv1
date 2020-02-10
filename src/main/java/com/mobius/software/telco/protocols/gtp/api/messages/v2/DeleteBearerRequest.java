@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.DeleteBearerRequestBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.EPSBearerID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ExtendedProtocolConfigurationOptions;
@@ -40,9 +40,9 @@ public interface DeleteBearerRequest extends GTP2Message
 	
 	void setEPSBearerID(EPSBearerID epsBearerID);
 	
-	BearerContext getFailedBearerContext();
+	List<DeleteBearerRequestBearerContextToBeRemoved> getFailedBearerContext();
 	
-	void setFailedBearerContext(BearerContext context);
+	void setFailedBearerContext(List<DeleteBearerRequestBearerContextToBeRemoved> context);
 	
 	ProcedureTransactionID getProcedureTransactionID();
 	

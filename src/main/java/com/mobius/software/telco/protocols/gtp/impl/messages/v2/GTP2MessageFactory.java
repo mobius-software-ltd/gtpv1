@@ -27,7 +27,6 @@ public class GTP2MessageFactory
 	{
 		GenericGTPMessage gtpMessage=null;
 		GTP2MessageType messageType=GTP2MessageType.fromInt(buffer.readByte());
-		System.out.println("MESSAGE:" + messageType);
 		switch(messageType)
 		{
 			case ECHO_REQUEST:

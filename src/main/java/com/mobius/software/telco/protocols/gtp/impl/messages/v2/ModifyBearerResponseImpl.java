@@ -18,9 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyBearerResponseBearerContextToBeModified;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyBearerResponseBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.APNRestriction;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformationReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ChangeReportingAction;
@@ -50,8 +51,8 @@ public class ModifyBearerResponseImpl extends AbstractGTP2Message implements Mod
 	private EPSBearerID epsBearerID;
 	private APNRestriction maximumAPNRestriction;
 	private ProtocolConfigurationOption protocolConfigurationOption;
-	private BearerContext bearerContextModified;
-	private BearerContext bearerContextMarkedForRemoved;
+	private List<ModifyBearerResponseBearerContextToBeModified> bearerContextModified;
+	private List<ModifyBearerResponseBearerContextToBeRemoved> bearerContextMarkedForRemoved;
 	private ChangeReportingAction changeReportingAction;
 	private CSGInformationReportingAction csgInformationReportingAction;
 	private HENBInformationReporting heNBInformationReporting;
@@ -111,10 +112,16 @@ public class ModifyBearerResponseImpl extends AbstractGTP2Message implements Mod
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContextModified=(BearerContext)tlv;
+						if(bearerContextModified==null)
+							bearerContextModified=new ArrayList<ModifyBearerResponseBearerContextToBeModified>();
+						
+						bearerContextModified.add((ModifyBearerResponseBearerContextToBeModified)tlv);
 						break;
 					case 1:
-						bearerContextMarkedForRemoved=(BearerContext)tlv;
+						if(bearerContextMarkedForRemoved==null)
+							bearerContextMarkedForRemoved=new ArrayList<ModifyBearerResponseBearerContextToBeRemoved>();
+						
+						bearerContextMarkedForRemoved.add((ModifyBearerResponseBearerContextToBeRemoved)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -225,11 +232,11 @@ public class ModifyBearerResponseImpl extends AbstractGTP2Message implements Mod
 		if(protocolConfigurationOption!=null)
 			output.add(protocolConfigurationOption);
 		
-		if(bearerContextModified!=null)
-			output.add(bearerContextModified);
+		if(bearerContextModified!=null && bearerContextModified.size()>0)
+			output.addAll(bearerContextModified);
 		
-		if(bearerContextMarkedForRemoved!=null)
-			output.add(bearerContextMarkedForRemoved);
+		if(bearerContextMarkedForRemoved!=null && bearerContextMarkedForRemoved.size()>0)
+			output.addAll(bearerContextMarkedForRemoved);
 		
 		if(changeReportingAction!=null)
 			output.add(changeReportingAction);
@@ -398,28 +405,34 @@ public class ModifyBearerResponseImpl extends AbstractGTP2Message implements Mod
 	}
 
 	@Override
-	public BearerContext getBearerContextModified() 
+	public List<ModifyBearerResponseBearerContextToBeModified> getBearerContextModified() 
 	{
 		return this.bearerContextModified;
 	}
 
 	@Override
-	public void setBearerContextModified(BearerContext bearerContext) 
+	public void setBearerContextModified(List<ModifyBearerResponseBearerContextToBeModified> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(ModifyBearerResponseBearerContextToBeModified curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContextModified=bearerContext;
 	}
 
 	@Override
-	public BearerContext getBearerContextMarkedForRemoved() 
+	public List<ModifyBearerResponseBearerContextToBeRemoved> getBearerContextMarkedForRemoved() 
 	{
 		return this.bearerContextMarkedForRemoved;
 	}
 
 	@Override
-	public void setBearerContextMarkedForRemoved(BearerContext bearerContext) 
+	public void setBearerContextMarkedForRemoved(List<ModifyBearerResponseBearerContextToBeRemoved> bearerContext) 
 	{
-		bearerContext.setInstance(1);
+		if(bearerContext!=null)
+			for(ModifyBearerResponseBearerContextToBeRemoved curr:bearerContext)
+				curr.setInstance(1);
+		
 		this.bearerContextMarkedForRemoved=bearerContext;
 	}
 

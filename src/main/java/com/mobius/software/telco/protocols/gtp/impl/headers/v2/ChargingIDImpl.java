@@ -28,7 +28,7 @@ public class ChargingIDImpl extends AbstractTLV2 implements ChargingID
 	@Override
 	public GTP2ElementType getElementType() 
 	{
-		return GTP2ElementType.COUNTER;
+		return GTP2ElementType.CHARGING_ID;
 	}
 
 	@Override

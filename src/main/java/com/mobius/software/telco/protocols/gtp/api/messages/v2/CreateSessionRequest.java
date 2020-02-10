@@ -17,11 +17,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateSessionRequestBearerContextToBeCreated;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateSessionRequestBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AMBR;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.APN;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.APNRestriction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AdditionalProtocolConfigurationOption;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CNOperatorSelectionEntity;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformation;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ChargingCharacteristic;
@@ -139,13 +140,13 @@ public interface CreateSessionRequest extends GTP2Message
 	
 	void setProtocolConfigurationOption(ProtocolConfigurationOption pco);
 	
-	BearerContext getBearerContextToBeCreated();
+	List<CreateSessionRequestBearerContextToBeCreated> getBearerContextToBeCreated();
 	
-	void setBearerContextToBeCreated(BearerContext bearerContext);
+	void setBearerContextToBeCreated(List<CreateSessionRequestBearerContextToBeCreated> bearerContext);
 	
-	BearerContext getBearerContextToBeRemoved();
+	List<CreateSessionRequestBearerContextToBeRemoved> getBearerContextToBeRemoved();
 	
-	void setBearerContextToBeRemoved(BearerContext bearerContext);
+	void setBearerContextToBeRemoved(List<CreateSessionRequestBearerContextToBeRemoved> bearerContext);
 	
 	TraceInformation getTraceInformation();
 	

@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateIndirectDataForwardingTunnelResponseBearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FTEID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.PrivateExtention;
@@ -33,9 +33,9 @@ public interface CreateIndirectDataForwardingTunnelResponse extends GTP2Message
 	
 	void setSenderFTEIDControlPlane(FTEID fteid);
 	
-	BearerContext getBearerContext();
+	List<CreateIndirectDataForwardingTunnelResponseBearerContext> getBearerContext();
 	
-	void setBearerContext(BearerContext bearerContext);
+	void setBearerContext(List<CreateIndirectDataForwardingTunnelResponseBearerContext> bearerContext);
 	
 	Recovery getRecovery();
 	

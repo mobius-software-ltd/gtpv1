@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.DeleteBearerFailureIndicationBearerContext;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2MessageType;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Indication;
@@ -32,7 +32,7 @@ import com.mobius.software.telco.protocols.gtp.api.messages.v2.DeleteBearerFailu
 public class DeleteBearerFailureIndicationImpl extends AbstractGTP2Message implements DeleteBearerFailureIndication
 {
 	private Cause cause;
-	private BearerContext bearerContext;
+	private List<DeleteBearerFailureIndicationBearerContext> bearerContext;
 	private Recovery recovery;
 	private Indication indication;
 	private OverloadControlInformation pgwOverloadControlInformation;
@@ -60,7 +60,10 @@ public class DeleteBearerFailureIndicationImpl extends AbstractGTP2Message imple
 				indication=(Indication)tlv;
 				break;
 			case BEARER_CONTEXT:
-				bearerContext=(BearerContext)tlv;
+				if(bearerContext==null)
+					bearerContext=new ArrayList<DeleteBearerFailureIndicationBearerContext>();
+				
+				bearerContext.add((DeleteBearerFailureIndicationBearerContext)tlv);
 				break;
 			case OVERLOAD_CONTROL_INFORMATION:
 				switch(tlv.getInstance())
@@ -95,10 +98,10 @@ public class DeleteBearerFailureIndicationImpl extends AbstractGTP2Message imple
 		
 		output.add(cause);
 		
-		if(bearerContext==null)
-			throw new GTPParseException("Bearer contextx not set");
+		if(bearerContext==null || bearerContext.size()==0)
+			throw new GTPParseException("Bearer context not set");
 		
-		output.add(bearerContext);
+		output.addAll(bearerContext);
 		
 		if(recovery!=null)
 			output.add(recovery);
@@ -199,14 +202,18 @@ public class DeleteBearerFailureIndicationImpl extends AbstractGTP2Message imple
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<DeleteBearerFailureIndicationBearerContext> getBearerContext() 
 	{
 		return this.bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<DeleteBearerFailureIndicationBearerContext> bearerContext) 
 	{
+		if(bearerContext!=null)
+			for(DeleteBearerFailureIndicationBearerContext curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 }

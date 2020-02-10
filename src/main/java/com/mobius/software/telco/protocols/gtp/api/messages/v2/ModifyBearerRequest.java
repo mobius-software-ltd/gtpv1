@@ -17,8 +17,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyBearerRequestBearerContextToBeModified;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyBearerRequestBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AMBR;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CNOperatorSelectionEntity;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformation;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Counter;
@@ -78,13 +79,13 @@ public interface ModifyBearerRequest extends GTP2Message
 	
 	void setDelayValue(DelayValue delayValue);
 	
-	BearerContext getBearerContextToBeModified();
+	List<ModifyBearerRequestBearerContextToBeModified> getBearerContextToBeModified();
 	
-	void setBearerContextToBeModified(BearerContext bearerContext);
+	void setBearerContextToBeModified(List<ModifyBearerRequestBearerContextToBeModified> bearerContext);
 	
-	BearerContext getBearerContextToBeRemoved();
+	List<ModifyBearerRequestBearerContextToBeRemoved> getBearerContextToBeRemoved();
 	
-	void setBearerContextToBeRemoved(BearerContext bearerContext);
+	void setBearerContextToBeRemoved(List<ModifyBearerRequestBearerContextToBeRemoved> bearerContext);
 	
 	Recovery getRecovery();
 	

@@ -17,7 +17,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateBearerResponseBearerContextToBeCreated;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FContainer;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FQCSID;
@@ -39,9 +39,9 @@ public interface CreateBearerResponse extends GTP2Message
 	
 	void setCause(Cause cause);
 	
-	BearerContext getBearerContext();
+	List<CreateBearerResponseBearerContextToBeCreated> getBearerContext();
 	
-	void setBearerContext(BearerContext bearerContext);
+	void setBearerContext(List<CreateBearerResponseBearerContextToBeCreated> bearerContext);
 	
 	Recovery getRecovery();
 	

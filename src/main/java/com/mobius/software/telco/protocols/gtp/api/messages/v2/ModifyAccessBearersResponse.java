@@ -17,7 +17,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyAccessBearerResponseBearerContextToBeModified;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyAccessBearerResponseBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Indication;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.LoadControlInformation;
@@ -31,13 +32,13 @@ public interface ModifyAccessBearersResponse extends GTP2Message
 	
 	void setCause(Cause cause);
 	
-	BearerContext getBearerContextModified();
+	List<ModifyAccessBearerResponseBearerContextToBeModified> getBearerContextModified();
 	
-	void setBearerContextModified(BearerContext bearerContext);
+	void setBearerContextModified(List<ModifyAccessBearerResponseBearerContextToBeModified> bearerContext);
 	
-	BearerContext getBearerContextMarkedForRemoved();
+	List<ModifyAccessBearerResponseBearerContextToBeRemoved> getBearerContextMarkedForRemoved();
 	
-	void setBearerContextMarkedForRemoved(BearerContext bearerContext);
+	void setBearerContextMarkedForRemoved(List<ModifyAccessBearerResponseBearerContextToBeRemoved> bearerContext);
 	
 	Recovery getRecovery();	
 

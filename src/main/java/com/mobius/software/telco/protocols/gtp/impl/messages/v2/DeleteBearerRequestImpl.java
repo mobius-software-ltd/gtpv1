@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.DeleteBearerRequestBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.EPSBearerID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ExtendedProtocolConfigurationOptions;
@@ -39,7 +39,7 @@ public class DeleteBearerRequestImpl extends AbstractGTP2Message implements Dele
 {
 	private EPSBearerID linkedEPSBearerID;
 	private EPSBearerID epsBearerID;
-	private BearerContext failedBearerContext;
+	private List<DeleteBearerRequestBearerContextToBeRemoved> failedBearerContext;
 	private ProcedureTransactionID procedureTransactionID;
 	private ProtocolConfigurationOption protocolConfigurationOption;
 	private FQCSID pgwFQCSID;
@@ -73,7 +73,10 @@ public class DeleteBearerRequestImpl extends AbstractGTP2Message implements Dele
 				procedureTransactionID=(ProcedureTransactionID)tlv;
 				break;
 			case BEARER_CONTEXT:
-				failedBearerContext=(BearerContext)tlv;				
+				if(failedBearerContext==null)
+					failedBearerContext=new ArrayList<DeleteBearerRequestBearerContextToBeRemoved>();
+					
+				failedBearerContext.add((DeleteBearerRequestBearerContextToBeRemoved)tlv);				
 				break;
 			case PROTOCOL_CONFIGURATION_OPTIONS:
 				protocolConfigurationOption=(ProtocolConfigurationOption)tlv;
@@ -163,8 +166,8 @@ public class DeleteBearerRequestImpl extends AbstractGTP2Message implements Dele
 		if(epsBearerID!=null)
 			output.add(epsBearerID);
 					
-		if(failedBearerContext!=null)
-			output.add(failedBearerContext);
+		if(failedBearerContext!=null && failedBearerContext.size()>0)
+			output.addAll(failedBearerContext);
 		
 		if(procedureTransactionID!=null)
 			output.add(procedureTransactionID);
@@ -279,15 +282,18 @@ public class DeleteBearerRequestImpl extends AbstractGTP2Message implements Dele
 	}
 
 	@Override
-	public BearerContext getFailedBearerContext() 
+	public List<DeleteBearerRequestBearerContextToBeRemoved> getFailedBearerContext() 
 	{
 		return this.failedBearerContext;
 	}
 
 	@Override
-	public void setFailedBearerContext(BearerContext bearerContext) 
+	public void setFailedBearerContext(List<DeleteBearerRequestBearerContextToBeRemoved> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(DeleteBearerRequestBearerContextToBeRemoved curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.failedBearerContext=bearerContext;
 	}
 

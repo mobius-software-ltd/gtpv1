@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.UpdateBearerRequestBearerContextToBeModified;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AMBR;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformationReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ChangeReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FContainer;
@@ -39,7 +39,7 @@ import com.mobius.software.telco.protocols.gtp.api.messages.v2.UpdateBearerReque
 
 public class UpdateBearerRequestImpl extends AbstractGTP2Message implements UpdateBearerRequest
 {
-	private BearerContext bearerContext;
+	private List<UpdateBearerRequestBearerContextToBeModified> bearerContext;
 	private ProcedureTransactionID procedureTransactionID;
 	private ProtocolConfigurationOption protocolConfigurationOption;
 	private AMBR apnAMBR;
@@ -91,7 +91,10 @@ public class UpdateBearerRequestImpl extends AbstractGTP2Message implements Upda
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContext=(BearerContext)tlv;
+						if(bearerContext==null)
+							bearerContext=new ArrayList<UpdateBearerRequestBearerContextToBeModified>();
+						
+						bearerContext.add((UpdateBearerRequestBearerContextToBeModified)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -174,10 +177,10 @@ public class UpdateBearerRequestImpl extends AbstractGTP2Message implements Upda
 		if(protocolConfigurationOption!=null)
 			output.add(protocolConfigurationOption);
 		
-		if(bearerContext==null)
+		if(bearerContext==null || bearerContext.size()==0)
 			throw new GTPParseException("Bearer Context not set");
 		
-		output.add(bearerContext);
+		output.addAll(bearerContext);
 		
 		if(pgwFQCSID!=null)
 			output.add(pgwFQCSID);
@@ -448,15 +451,18 @@ public class UpdateBearerRequestImpl extends AbstractGTP2Message implements Upda
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<UpdateBearerRequestBearerContextToBeModified> getBearerContext() 
 	{
 		return bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<UpdateBearerRequestBearerContextToBeModified> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(UpdateBearerRequestBearerContextToBeModified curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 }

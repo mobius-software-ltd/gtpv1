@@ -17,8 +17,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.UpdateBearerRequestBearerContextToBeModified;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AMBR;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformationReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ChangeReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FContainer;
@@ -34,9 +34,9 @@ import com.mobius.software.telco.protocols.gtp.api.headers.v2.ProtocolConfigurat
 
 public interface UpdateBearerRequest extends GTP2Message
 {
-	BearerContext getBearerContext();
+	List<UpdateBearerRequestBearerContextToBeModified> getBearerContext();
 	
-	void setBearerContext(BearerContext bearerContext);
+	void setBearerContext(List<UpdateBearerRequestBearerContextToBeModified> bearerContext);
 	
 	ProcedureTransactionID getProcedureTransactionID();
 	

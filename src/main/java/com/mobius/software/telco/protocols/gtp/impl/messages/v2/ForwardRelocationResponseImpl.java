@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ForwardRelocationResponseBearerContext;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FCause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FContainer;
@@ -39,9 +39,9 @@ public class ForwardRelocationResponseImpl extends AbstractGTP2Message implement
 	Cause cause;
 	FTEID senderFTEIDControlPlane;
 	Indication indication;
-	BearerContext listOfSetupBearers;
-	BearerContext listOfSetupRABs;
-	BearerContext listOfSetupPFCs;
+	List<ForwardRelocationResponseBearerContext> listOfSetupBearers;
+	List<ForwardRelocationResponseBearerContext> listOfSetupRABs;
+	List<ForwardRelocationResponseBearerContext> listOfSetupPFCs;
 	FCause s1APCause;
 	FCause ranapCause;
 	FCause bssGPCause;
@@ -57,7 +57,7 @@ public class ForwardRelocationResponseImpl extends AbstractGTP2Message implement
 	NodeNumber mmeNumber;
 	NodeIdentifier sgsnIdentifierForMTSMS;
 	NodeIdentifier mmeIdentifierForMTSMS;
-	BearerContext setupBearersForSCEFPDNConnections;
+	List<ForwardRelocationResponseBearerContext> setupBearersForSCEFPDNConnections;
 	private List<PrivateExtention> privateExtentions;
 	
 	@Override
@@ -88,16 +88,28 @@ public class ForwardRelocationResponseImpl extends AbstractGTP2Message implement
 				switch(tlv.getInstance())
 				{
 					case 0:
-						listOfSetupBearers=(BearerContext)tlv;
+						if(listOfSetupBearers==null)
+							listOfSetupBearers=new ArrayList<ForwardRelocationResponseBearerContext>();
+							
+						listOfSetupBearers.add((ForwardRelocationResponseBearerContext)tlv);
 						break;
 					case 1:
-						listOfSetupRABs=(BearerContext)tlv;
+						if(listOfSetupRABs==null)
+							listOfSetupRABs=new ArrayList<ForwardRelocationResponseBearerContext>();
+							
+						listOfSetupRABs.add((ForwardRelocationResponseBearerContext)tlv);
 						break;
 					case 2:
-						listOfSetupPFCs=(BearerContext)tlv;
+						if(listOfSetupPFCs==null)
+							listOfSetupPFCs=new ArrayList<ForwardRelocationResponseBearerContext>();
+							
+						listOfSetupPFCs.add((ForwardRelocationResponseBearerContext)tlv);
 						break;
 					case 3:
-						setupBearersForSCEFPDNConnections=(BearerContext)tlv;
+						if(setupBearersForSCEFPDNConnections==null)
+							setupBearersForSCEFPDNConnections=new ArrayList<ForwardRelocationResponseBearerContext>();
+							
+						setupBearersForSCEFPDNConnections.add((ForwardRelocationResponseBearerContext)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -211,14 +223,14 @@ public class ForwardRelocationResponseImpl extends AbstractGTP2Message implement
 		if(indication!=null)
 			output.add(indication);
 		
-		if(listOfSetupBearers!=null)
-			output.add(listOfSetupBearers);
+		if(listOfSetupBearers!=null && listOfSetupBearers.size()>0)
+			output.addAll(listOfSetupBearers);
 		
-		if(listOfSetupRABs!=null)
-			output.add(listOfSetupRABs);
+		if(listOfSetupRABs!=null && listOfSetupRABs.size()>0)
+			output.addAll(listOfSetupRABs);
 		
-		if(listOfSetupPFCs!=null)
-			output.add(listOfSetupPFCs);
+		if(listOfSetupPFCs!=null && listOfSetupPFCs.size()>0)
+			output.addAll(listOfSetupPFCs);
 		
 		if(s1APCause!=null)
 			output.add(s1APCause);
@@ -265,8 +277,8 @@ public class ForwardRelocationResponseImpl extends AbstractGTP2Message implement
 		if(mmeIdentifierForMTSMS!=null)
 			output.add(mmeIdentifierForMTSMS);
 			
-		if(setupBearersForSCEFPDNConnections!=null)
-			output.add(setupBearersForSCEFPDNConnections);
+		if(setupBearersForSCEFPDNConnections!=null && setupBearersForSCEFPDNConnections.size()>0)
+			output.addAll(setupBearersForSCEFPDNConnections);
 			
 		if(privateExtentions!=null)
 		{
@@ -446,41 +458,50 @@ public class ForwardRelocationResponseImpl extends AbstractGTP2Message implement
 	}
 
 	@Override
-	public BearerContext getListOfSetupBearers() 
+	public List<ForwardRelocationResponseBearerContext> getListOfSetupBearers() 
 	{
 		return listOfSetupBearers;
 	}
 
 	@Override
-	public void setListOfSetupBearers(BearerContext bearerContext) 
+	public void setListOfSetupBearers(List<ForwardRelocationResponseBearerContext> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(ForwardRelocationResponseBearerContext curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.listOfSetupBearers=bearerContext;
 	}
 
 	@Override
-	public BearerContext getListOfRABs() 
+	public List<ForwardRelocationResponseBearerContext> getListOfRABs() 
 	{
 		return listOfSetupRABs;
 	}
 
 	@Override
-	public void setListOfSetupRABs(BearerContext bearerContext) 
+	public void setListOfSetupRABs(List<ForwardRelocationResponseBearerContext> bearerContext) 
 	{
-		bearerContext.setInstance(1);
+		if(bearerContext!=null)
+			for(ForwardRelocationResponseBearerContext curr:bearerContext)
+				curr.setInstance(1);
+		
 		this.listOfSetupRABs=bearerContext;
 	}
 
 	@Override
-	public BearerContext getListOfSetupPFCs() 
+	public List<ForwardRelocationResponseBearerContext> getListOfSetupPFCs() 
 	{
 		return listOfSetupPFCs;
 	}
 
 	@Override
-	public void setListOfSetupPFCs(BearerContext bearerContext) 
+	public void setListOfSetupPFCs(List<ForwardRelocationResponseBearerContext> bearerContext) 
 	{
-		bearerContext.setInstance(2);
+		if(bearerContext!=null)
+			for(ForwardRelocationResponseBearerContext curr:bearerContext)
+				curr.setInstance(2);
+		
 		this.listOfSetupPFCs=bearerContext;
 	}
 
@@ -511,15 +532,18 @@ public class ForwardRelocationResponseImpl extends AbstractGTP2Message implement
 	}
 
 	@Override
-	public BearerContext getSetupBearersForSCEFPDNConnections() 
+	public List<ForwardRelocationResponseBearerContext> getSetupBearersForSCEFPDNConnections() 
 	{
 		return this.setupBearersForSCEFPDNConnections;
 	}
 
 	@Override
-	public void setSetupBearersForSCEFPDNConnections(BearerContext bearerContext) 
+	public void setSetupBearersForSCEFPDNConnections(List<ForwardRelocationResponseBearerContext> bearerContext) 
 	{
-		bearerContext.setInstance(3);
+		if(bearerContext!=null)
+			for(ForwardRelocationResponseBearerContext curr:bearerContext)
+				curr.setInstance(3);
+		
 		this.setupBearersForSCEFPDNConnections=bearerContext;
 	}
 

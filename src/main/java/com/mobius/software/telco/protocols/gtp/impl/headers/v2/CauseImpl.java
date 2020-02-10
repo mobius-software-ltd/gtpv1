@@ -31,6 +31,7 @@ public class CauseImpl extends AbstractTLV2 implements Cause
 	private Boolean pdnConnectionIEError;
 	private Boolean bearerContextIEError;
 	private Boolean causeSource;
+	private byte spareByte;
 	
 	@Override
 	public GTP2ElementType getElementType() 
@@ -55,7 +56,7 @@ public class CauseImpl extends AbstractTLV2 implements Cause
 		else
 			throw new MissingArgumentException("Cause is not set");
 		
-		byte currValue=0;
+		byte currValue=spareByte;
 		if(causeSource!=null && causeSource)
 			currValue|=0x01;
 		
@@ -83,6 +84,7 @@ public class CauseImpl extends AbstractTLV2 implements Cause
 	{
 		cause=CauseType.fromInt(buffer.readByte() & 0x0FF);
 		byte currByte=buffer.readByte();
+		spareByte=(byte)(currByte & 0xF8);
 		causeSource=((currByte & 0x01) !=0);
 		bearerContextIEError=((currByte & 0x02) !=0);
 		pdnConnectionIEError=((currByte & 0x04) !=0);

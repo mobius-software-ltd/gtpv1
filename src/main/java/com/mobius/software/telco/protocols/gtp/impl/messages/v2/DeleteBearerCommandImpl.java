@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.DeleteBearerCommandBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FTEID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2MessageType;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.OverloadControlInformation;
@@ -33,7 +33,7 @@ import com.mobius.software.telco.protocols.gtp.api.messages.v2.DeleteBearerComma
 
 public class DeleteBearerCommandImpl extends AbstractGTP2Message implements DeleteBearerCommand
 {
-	BearerContext bearerContext;
+	List<DeleteBearerCommandBearerContextToBeRemoved> bearerContext;
 	UserLocationInformation userLocationInformation;
 	ULITimestamp uliTimestamp;
 	UETimezone ueTimezone;
@@ -77,7 +77,10 @@ public class DeleteBearerCommandImpl extends AbstractGTP2Message implements Dele
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContext=(BearerContext)tlv;
+						if(bearerContext==null)
+							bearerContext=new ArrayList<DeleteBearerCommandBearerContextToBeRemoved>();
+						
+						bearerContext.add((DeleteBearerCommandBearerContextToBeRemoved)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -114,10 +117,10 @@ public class DeleteBearerCommandImpl extends AbstractGTP2Message implements Dele
 	public List<TLV2> getTLVs() throws GTPParseException 
 	{
 		ArrayList<TLV2> output=new ArrayList<TLV2>();
-		if(bearerContext==null)
+		if(bearerContext==null || bearerContext.size()==0)
 			throw new GTPParseException("Bearer Context to be created not set");
 		
-		output.add(bearerContext);
+		output.addAll(bearerContext);
 		
 		if(userLocationInformation!=null)
 			output.add(userLocationInformation);
@@ -227,15 +230,18 @@ public class DeleteBearerCommandImpl extends AbstractGTP2Message implements Dele
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<DeleteBearerCommandBearerContextToBeRemoved> getBearerContext() 
 	{
 		return bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<DeleteBearerCommandBearerContextToBeRemoved> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(DeleteBearerCommandBearerContextToBeRemoved curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 

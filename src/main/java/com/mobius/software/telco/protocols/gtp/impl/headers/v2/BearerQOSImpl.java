@@ -75,7 +75,7 @@ public class BearerQOSImpl extends AbstractTLV2 implements BearerQos
 		if(pci!=null && pci)
 			currByte|=0x40;
 		
-		currByte|=((level.getValue()<<3) & 0x18);
+		currByte|=((level.getValue()<<3) & 0x3C);
 		buffer.writeByte(currByte);
 		buffer.writeByte(label);
 		
@@ -99,7 +99,7 @@ public class BearerQOSImpl extends AbstractTLV2 implements BearerQos
 		pvi=((currByte&0x01)!=0);
 		pci=((currByte&0x40)!=0);
 		
-		level=PriorityLevel.fromInt((currByte>>3) & 0x03);
+		level=PriorityLevel.fromInt((currByte>>3) & 0x07);
 		label=buffer.readByte() & 0x0FF;
 		
 		maximumBitrateforUL=((buffer.readByte()<<32) & 0x0FF00000000L) + buffer.readUnsignedInt();

@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateIndirectDataForwardingTunnelResponseBearerContext;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FTEID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2MessageType;
@@ -32,7 +32,7 @@ public class CreateIndirectDataForwardingTunnelResponseImpl extends AbstractGTP2
 {
 	Cause cause;
 	FTEID senderFTEIDControlPlane;
-	BearerContext bearerContext;
+	List<CreateIndirectDataForwardingTunnelResponseBearerContext> bearerContext;
 	Recovery recovery;
 	private List<PrivateExtention> privateExtentions;
 	
@@ -64,7 +64,10 @@ public class CreateIndirectDataForwardingTunnelResponseImpl extends AbstractGTP2
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContext=(BearerContext)tlv;
+						if(bearerContext==null)
+							bearerContext=new ArrayList<CreateIndirectDataForwardingTunnelResponseBearerContext>();
+						
+						bearerContext.add((CreateIndirectDataForwardingTunnelResponseBearerContext)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -96,10 +99,10 @@ public class CreateIndirectDataForwardingTunnelResponseImpl extends AbstractGTP2
 		if(senderFTEIDControlPlane!=null)
 			output.add(senderFTEIDControlPlane);
 		
-		if(bearerContext==null)
+		if(bearerContext==null || bearerContext.size()==0)
 			throw new GTPParseException("Bearer Context not set");
 		
-		output.add(bearerContext);
+		output.addAll(bearerContext);
 		
 		if(recovery!=null)
 			output.add(recovery);
@@ -152,15 +155,18 @@ public class CreateIndirectDataForwardingTunnelResponseImpl extends AbstractGTP2
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<CreateIndirectDataForwardingTunnelResponseBearerContext> getBearerContext() 
 	{
 		return bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<CreateIndirectDataForwardingTunnelResponseBearerContext> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(CreateIndirectDataForwardingTunnelResponseBearerContext curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 

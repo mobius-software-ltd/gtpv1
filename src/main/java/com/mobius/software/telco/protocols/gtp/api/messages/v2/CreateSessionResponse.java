@@ -17,10 +17,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateSessionResponseBearerContextToBeCreated;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateSessionResponseBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AMBR;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.APNRestriction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AdditionalProtocolConfigurationOption;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformationReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ChangeReportingAction;
@@ -91,13 +92,13 @@ public interface CreateSessionResponse extends GTP2Message
 	
 	void setProtocolConfigurationOption(ProtocolConfigurationOption pco);
 	
-	BearerContext getBearerContextCreated();
+	List<CreateSessionResponseBearerContextToBeCreated> getBearerContextCreated();
 	
-	void setBearerContextCreated(BearerContext bearerContext);
+	void setBearerContextCreated(List<CreateSessionResponseBearerContextToBeCreated> bearerContext);
 	
-	BearerContext getBearerContextMarkedForRemoved();
+	List<CreateSessionResponseBearerContextToBeRemoved> getBearerContextMarkedForRemoved();
 	
-	void setBearerContextMarkedForRemoved(BearerContext bearerContext);
+	void setBearerContextMarkedForRemoved(List<CreateSessionResponseBearerContextToBeRemoved> bearerContext);
 	
 	Recovery getRecovery();
 	

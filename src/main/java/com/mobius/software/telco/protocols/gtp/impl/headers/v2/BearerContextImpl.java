@@ -16,30 +16,77 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2ElementType;
+import com.mobius.software.telco.protocols.gtp.api.headers.v2.TLV2;
 
-public class BearerContextImpl extends AbstractBinaryTLV implements BearerContext 
+public abstract class BearerContextImpl extends AbstractTLV2 implements BearerContext 
 {
-	private ByteBuf value;
+	private List<TLV2> originalTLVs=new ArrayList<TLV2>();
 	
 	@Override
 	public GTP2ElementType getElementType() 
 	{
 		return GTP2ElementType.BEARER_CONTEXT;
 	}
-
+	
 	@Override
-	public ByteBuf getValue() 
+	public Integer getLength() 
 	{
-		return Unpooled.wrappedBuffer(value);
+		int length=0;
+		List<TLV2> tlv=null;
+		try
+		{
+			tlv=getTLVs();
+		}
+		catch(Exception ex)
+		{
+			return 0;
+		}
+		
+		for(TLV2 currTLV:tlv)
+			length+=currTLV.getLength() + 4;
+		
+		return length;
 	}
 
 	@Override
-	public void setValue(ByteBuf value) 
+	public void writeValue(ByteBuf buffer) throws GTPParseException 
 	{
-		this.value=value;
+		List<TLV2> tlv;
+		if(originalTLVs!=null)
+			tlv=originalTLVs;
+		else
+			tlv=getTLVs();
+		
+		for(TLV2 currTLV:tlv)
+			currTLV.encode(buffer);		
 	}
+	
+	@Override
+	protected void readValue(ByteBuf buffer, Integer length) throws GTPParseException 
+	{
+		while(length>0)
+		{
+			TLV2 currTLV=TLV2Factory.decode(null, buffer);
+			if(currTLV!=null)
+			{
+				applyTLV(currTLV);
+				originalTLVs.add(currTLV);
+			}
+			
+			length-=currTLV.getLength() + 4;
+		}
+	}
+	
+	@Override
+	public abstract void applyTLV(TLV2 tlv) throws GTPParseException;
+
+	@Override
+	public abstract List<TLV2> getTLVs() throws GTPParseException;
 }

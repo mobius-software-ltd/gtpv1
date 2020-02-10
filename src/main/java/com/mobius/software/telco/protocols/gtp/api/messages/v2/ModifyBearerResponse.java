@@ -17,8 +17,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyBearerResponseBearerContextToBeModified;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyBearerResponseBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.APNRestriction;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformationReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ChangeReportingAction;
@@ -60,13 +61,13 @@ public interface ModifyBearerResponse extends GTP2Message
 	
 	void setProtocolConfigurationOption(ProtocolConfigurationOption pco);
 	
-	BearerContext getBearerContextModified();
+	List<ModifyBearerResponseBearerContextToBeModified> getBearerContextModified();
 	
-	void setBearerContextModified(BearerContext bearerContext);
+	void setBearerContextModified(List<ModifyBearerResponseBearerContextToBeModified> bearerContext);
 	
-	BearerContext getBearerContextMarkedForRemoved();
+	List<ModifyBearerResponseBearerContextToBeRemoved> getBearerContextMarkedForRemoved();
 	
-	void setBearerContextMarkedForRemoved(BearerContext bearerContext);
+	void setBearerContextMarkedForRemoved(List<ModifyBearerResponseBearerContextToBeRemoved> bearerContext);
 	
 	ChangeReportingAction getChangeReportingAction();
 	

@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.DeleteBearerResponseBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.Cause;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.EPSBearerID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FContainer;
@@ -45,7 +45,7 @@ public class DeleteBearerResponseImpl extends AbstractGTP2Message implements Del
 	private Cause cause;
 	EPSBearerID epsBearerID;
 	Recovery recovery;
-	BearerContext bearerContext;
+	List<DeleteBearerResponseBearerContextToBeRemoved> bearerContext;
 	IPAddress ueLocalIPAddress;
 	PortNumber ueUDPPort;
 	IPAddress sgsnIdentifier;
@@ -103,7 +103,10 @@ public class DeleteBearerResponseImpl extends AbstractGTP2Message implements Del
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContext=(BearerContext)tlv;
+						if(bearerContext==null)
+							bearerContext=new ArrayList<DeleteBearerResponseBearerContextToBeRemoved>();
+						
+						bearerContext.add((DeleteBearerResponseBearerContextToBeRemoved)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -240,8 +243,8 @@ public class DeleteBearerResponseImpl extends AbstractGTP2Message implements Del
 		if(protocolConfigurationOption!=null)
 			output.add(protocolConfigurationOption);
 		
-		if(bearerContext!=null)
-			output.add(bearerContext);
+		if(bearerContext!=null && bearerContext.size()>0)
+			output.addAll(bearerContext);
 		
 		if(recovery!=null)
 			output.add(recovery);
@@ -624,15 +627,18 @@ public class DeleteBearerResponseImpl extends AbstractGTP2Message implements Del
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<DeleteBearerResponseBearerContextToBeRemoved> getBearerContext() 
 	{
 		return bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<DeleteBearerResponseBearerContextToBeRemoved> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(DeleteBearerResponseBearerContextToBeRemoved curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 

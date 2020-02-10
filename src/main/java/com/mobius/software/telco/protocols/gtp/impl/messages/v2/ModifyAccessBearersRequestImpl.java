@@ -18,8 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyAccessBearerRequestBearerContextToBeModified;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.ModifyAccessBearerRequestBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.DelayValue;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FTEID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2MessageType;
@@ -35,8 +36,8 @@ public class ModifyAccessBearersRequestImpl extends AbstractGTP2Message implemen
 	Indication indication;
 	FTEID senderFTEIDControlPlane;
 	DelayValue delayValue;
-	BearerContext bearerContextToBeModified;
-	BearerContext bearerContextToBeRemoved;
+	List<ModifyAccessBearerRequestBearerContextToBeModified> bearerContextToBeModified;
+	List<ModifyAccessBearerRequestBearerContextToBeRemoved> bearerContextToBeRemoved;
 	Recovery recovery;
 	SecondaryRatUsageDataReport secondaryRatUsageDataReport;
 	private List<PrivateExtention> privateExtentions;
@@ -72,10 +73,16 @@ public class ModifyAccessBearersRequestImpl extends AbstractGTP2Message implemen
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContextToBeModified=(BearerContext)tlv;
+						if(bearerContextToBeModified==null)
+							bearerContextToBeModified=new ArrayList<ModifyAccessBearerRequestBearerContextToBeModified>();
+						
+						bearerContextToBeModified.add((ModifyAccessBearerRequestBearerContextToBeModified)tlv);
 						break;
 					case 1:
-						bearerContextToBeRemoved=(BearerContext)tlv;
+						if(bearerContextToBeRemoved==null)
+							bearerContextToBeRemoved=new ArrayList<ModifyAccessBearerRequestBearerContextToBeRemoved>();
+						
+						bearerContextToBeRemoved.add((ModifyAccessBearerRequestBearerContextToBeRemoved)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -111,11 +118,11 @@ public class ModifyAccessBearersRequestImpl extends AbstractGTP2Message implemen
 		if(delayValue!=null)
 			output.add(delayValue);
 			
-		if(bearerContextToBeModified!=null)
-			output.add(bearerContextToBeModified);
+		if(bearerContextToBeModified!=null && bearerContextToBeModified.size()>0)
+			output.addAll(bearerContextToBeModified);
 		
-		if(bearerContextToBeRemoved!=null)
-			output.add(bearerContextToBeRemoved);
+		if(bearerContextToBeRemoved!=null && bearerContextToBeRemoved.size()>0)
+			output.addAll(bearerContextToBeRemoved);
 		
 		if(recovery!=null)
 			output.add(recovery);
@@ -171,28 +178,34 @@ public class ModifyAccessBearersRequestImpl extends AbstractGTP2Message implemen
 	}
 
 	@Override
-	public BearerContext getBearerContextToBeModified() 
+	public List<ModifyAccessBearerRequestBearerContextToBeModified> getBearerContextToBeModified() 
 	{
 		return bearerContextToBeModified;
 	}
 
 	@Override
-	public void setBearerContextToBeModified(BearerContext bearerContext) 
+	public void setBearerContextToBeModified(List<ModifyAccessBearerRequestBearerContextToBeModified> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(ModifyAccessBearerRequestBearerContextToBeModified curr:bearerContext)				
+				curr.setInstance(0);
+		
 		this.bearerContextToBeModified=bearerContext;
 	}
 
 	@Override
-	public BearerContext getBearerContextToBeRemoved() 
+	public List<ModifyAccessBearerRequestBearerContextToBeRemoved> getBearerContextToBeRemoved() 
 	{
 		return bearerContextToBeRemoved;
 	}
 
 	@Override
-	public void setBearerContextToBeRemoved(BearerContext bearerContext) 
+	public void setBearerContextToBeRemoved(List<ModifyAccessBearerRequestBearerContextToBeRemoved> bearerContext) 
 	{
-		bearerContext.setInstance(1);
+		if(bearerContext!=null)
+			for(ModifyAccessBearerRequestBearerContextToBeRemoved curr:bearerContext)
+				curr.setInstance(1);
+		
 		this.bearerContextToBeRemoved=bearerContext;
 	}
 

@@ -1,4 +1,8 @@
 package com.mobius.software.telco.protocols.gtp.api.headers.v2;
+
+import java.util.List;
+
+import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
 /*Mobius Software LTD
 Copyright 2019, Mobius Software LTD and individual contributors
 by the @authors tag.
@@ -15,11 +19,10 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
-import io.netty.buffer.ByteBuf;
 
 public interface BearerContext extends TLV2
-{
-	ByteBuf getValue();
+{	
+	List<TLV2> getTLVs() throws GTPParseException;
 	
-	void setValue(ByteBuf value);
+	void applyTLV(TLV2 tlv) throws GTPParseException;
 }

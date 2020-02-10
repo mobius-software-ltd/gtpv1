@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.UpdateBearerResponseBearerContextToBeModified;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FContainer;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FQCSID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2MessageType;
@@ -42,7 +42,7 @@ import com.mobius.software.telco.protocols.gtp.api.messages.v2.UpdateBearerRespo
 public class UpdateBearerResponseImpl extends AbstractGTP2Message implements UpdateBearerResponse
 {
 	Cause cause;
-	BearerContext bearerContext;
+	List<UpdateBearerResponseBearerContextToBeModified> bearerContext;
 	ProtocolConfigurationOption protocolConfigurationOption;
 	Recovery recovery;
 	FQCSID mmeFQCSID;
@@ -100,7 +100,10 @@ public class UpdateBearerResponseImpl extends AbstractGTP2Message implements Upd
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContext=(BearerContext)tlv;
+						if(bearerContext==null)
+							bearerContext=new ArrayList<UpdateBearerResponseBearerContextToBeModified>();
+						
+						bearerContext.add((UpdateBearerResponseBearerContextToBeModified)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -222,10 +225,10 @@ public class UpdateBearerResponseImpl extends AbstractGTP2Message implements Upd
 		if(protocolConfigurationOption!=null)
 			output.add(protocolConfigurationOption);
 		
-		if(bearerContext==null)
+		if(bearerContext==null || bearerContext.size()==0)
 			throw new GTPParseException("Bearer Context to be created not set");
 		
-		output.add(bearerContext);
+		output.addAll(bearerContext);
 		
 		if(recovery!=null)
 			output.add(recovery);
@@ -589,15 +592,18 @@ public class UpdateBearerResponseImpl extends AbstractGTP2Message implements Upd
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<UpdateBearerResponseBearerContextToBeModified> getBearerContext() 
 	{
 		return bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<UpdateBearerResponseBearerContextToBeModified> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(UpdateBearerResponseBearerContextToBeModified curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 }

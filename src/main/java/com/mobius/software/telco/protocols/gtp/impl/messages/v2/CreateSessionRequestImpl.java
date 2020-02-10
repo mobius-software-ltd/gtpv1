@@ -18,12 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateSessionRequestBearerContextToBeCreated;
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateSessionRequestBearerContextToBeRemoved;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AMBR;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.APN;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.APNRestriction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.AdditionalProtocolConfigurationOption;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CNOperatorSelectionEntity;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformation;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ChargingCharacteristic;
@@ -90,8 +91,8 @@ public class CreateSessionRequestImpl extends AbstractGTP2Message implements Cre
 	EPSBearerID epsBearerID;
 	TrustedWLANModeIndication trustedWLANModeIndication;
 	ProtocolConfigurationOption protocolConfigurationOption;
-	BearerContext bearerContextToBeCreated;
-	BearerContext bearerContextToBeRemoved;
+	List<CreateSessionRequestBearerContextToBeCreated> bearerContextToBeCreated;
+	List<CreateSessionRequestBearerContextToBeRemoved> bearerContextToBeRemoved;
 	TraceInformation traceInformation;
 	Recovery recovery;
 	FQCSID mmeFQCSID;
@@ -223,10 +224,16 @@ public class CreateSessionRequestImpl extends AbstractGTP2Message implements Cre
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContextToBeCreated=(BearerContext)tlv;
+						if(bearerContextToBeCreated==null)
+							bearerContextToBeCreated=new ArrayList<CreateSessionRequestBearerContextToBeCreated>();
+						
+						bearerContextToBeCreated.add((CreateSessionRequestBearerContextToBeCreated)tlv);
 						break;
 					case 1:
-						bearerContextToBeRemoved=(BearerContext)tlv;
+						if(bearerContextToBeRemoved==null)
+							bearerContextToBeRemoved=new ArrayList<CreateSessionRequestBearerContextToBeRemoved>();
+						
+						bearerContextToBeRemoved.add((CreateSessionRequestBearerContextToBeRemoved)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -475,13 +482,13 @@ public class CreateSessionRequestImpl extends AbstractGTP2Message implements Cre
 		if(protocolConfigurationOption!=null)
 			output.add(protocolConfigurationOption);
 		
-		if(bearerContextToBeCreated==null)
+		if(bearerContextToBeCreated==null || bearerContextToBeCreated.size()==0)
 			throw new GTPParseException("Bearer Context to be created not set");
 		
-		output.add(bearerContextToBeCreated);
+		output.addAll(bearerContextToBeCreated);
 		
-		if(bearerContextToBeRemoved!=null)
-			output.add(bearerContextToBeRemoved);
+		if(bearerContextToBeRemoved!=null && bearerContextToBeRemoved.size()>0)
+			output.addAll(bearerContextToBeRemoved);
 		
 		if(traceInformation!=null)
 			output.add(traceInformation);
@@ -868,28 +875,34 @@ public class CreateSessionRequestImpl extends AbstractGTP2Message implements Cre
 	}
 
 	@Override
-	public BearerContext getBearerContextToBeCreated() 
+	public List<CreateSessionRequestBearerContextToBeCreated> getBearerContextToBeCreated() 
 	{
 		return bearerContextToBeCreated;
 	}
 
 	@Override
-	public void setBearerContextToBeCreated(BearerContext bearerContext) 
+	public void setBearerContextToBeCreated(List<CreateSessionRequestBearerContextToBeCreated> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(CreateSessionRequestBearerContextToBeCreated curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContextToBeCreated=bearerContext;
 	}
 
 	@Override
-	public BearerContext getBearerContextToBeRemoved() 
+	public List<CreateSessionRequestBearerContextToBeRemoved> getBearerContextToBeRemoved() 
 	{
 		return bearerContextToBeRemoved;
 	}
 
 	@Override
-	public void setBearerContextToBeRemoved(BearerContext bearerContext) 
+	public void setBearerContextToBeRemoved(List<CreateSessionRequestBearerContextToBeRemoved> bearerContext) 
 	{
-		bearerContext.setInstance(1);
+		if(bearerContext!=null)
+			for(CreateSessionRequestBearerContextToBeRemoved curr:bearerContext)
+				curr.setInstance(1);
+		
 		this.bearerContextToBeRemoved=bearerContext;
 	}
 

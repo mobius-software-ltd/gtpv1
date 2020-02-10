@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateBearerRequestBearerContextToBeCreated;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.CSGInformationReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.ChangeReportingAction;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.EPSBearerID;
@@ -42,7 +42,7 @@ public class CreateBearerRequestImpl extends AbstractGTP2Message implements Crea
 	private ProcedureTransactionID procedureTransactionID;
 	private EPSBearerID epsBearerID;
 	private ProtocolConfigurationOption protocolConfigurationOption;
-	private BearerContext bearerContext;
+	private List<CreateBearerRequestBearerContextToBeCreated> bearerContext;
 	private FQCSID pgwFQCSID;
 	private FQCSID sgwFQCSID;
 	private ChangeReportingAction changeReportingAction;
@@ -91,7 +91,10 @@ public class CreateBearerRequestImpl extends AbstractGTP2Message implements Crea
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContext=(BearerContext)tlv;
+						if(bearerContext==null)
+							bearerContext=new ArrayList<CreateBearerRequestBearerContextToBeCreated>();
+						
+						bearerContext.add((CreateBearerRequestBearerContextToBeCreated)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -174,10 +177,10 @@ public class CreateBearerRequestImpl extends AbstractGTP2Message implements Crea
 		if(protocolConfigurationOption!=null)
 			output.add(protocolConfigurationOption);
 		
-		if(bearerContext==null)
+		if(bearerContext==null || bearerContext.size()==0)
 			throw new GTPParseException("Bearer Context not set");
 		
-		output.add(bearerContext);
+		output.addAll(bearerContext);
 		
 		if(pgwFQCSID!=null)
 			output.add(pgwFQCSID);
@@ -448,15 +451,18 @@ public class CreateBearerRequestImpl extends AbstractGTP2Message implements Crea
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<CreateBearerRequestBearerContextToBeCreated> getBearerContext() 
 	{
 		return bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<CreateBearerRequestBearerContextToBeCreated> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(CreateBearerRequestBearerContextToBeCreated curr:bearerContext)
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 }

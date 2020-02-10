@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>*/
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mobius.software.telco.protocols.gtp.api.bcontexts.v2.CreateIndirectDataForwardingTunnelRequestBearerContext;
 import com.mobius.software.telco.protocols.gtp.api.exceptions.GTPParseException;
-import com.mobius.software.telco.protocols.gtp.api.headers.v2.BearerContext;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.FTEID;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2MessageType;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.IMSI;
@@ -36,7 +36,7 @@ public class CreateIndirectDataForwardingTunnelRequestImpl extends AbstractGTP2M
 	MEI mei;
 	Indication indication;
 	FTEID senderFTEIDControlPlane;
-	BearerContext bearerContext;
+	List<CreateIndirectDataForwardingTunnelRequestBearerContext> bearerContext;
 	Recovery recovery;
 	private List<PrivateExtention> privateExtentions;
 	
@@ -74,7 +74,10 @@ public class CreateIndirectDataForwardingTunnelRequestImpl extends AbstractGTP2M
 				switch(tlv.getInstance())
 				{
 					case 0:
-						bearerContext=(BearerContext)tlv;
+						if(bearerContext==null)
+							bearerContext=new ArrayList<CreateIndirectDataForwardingTunnelRequestBearerContext>();
+						
+						bearerContext.add((CreateIndirectDataForwardingTunnelRequestBearerContext)tlv);
 						break;
 					default:
 						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
@@ -110,10 +113,10 @@ public class CreateIndirectDataForwardingTunnelRequestImpl extends AbstractGTP2M
 		if(senderFTEIDControlPlane!=null)
 			output.add(senderFTEIDControlPlane);
 		
-		if(bearerContext==null)
+		if(bearerContext==null || bearerContext.size()==0)
 			throw new GTPParseException("Bearer Context not set");
 		
-		output.add(bearerContext);
+		output.addAll(bearerContext);
 		
 		if(recovery!=null)
 			output.add(recovery);
@@ -192,15 +195,18 @@ public class CreateIndirectDataForwardingTunnelRequestImpl extends AbstractGTP2M
 	}
 
 	@Override
-	public BearerContext getBearerContext() 
+	public List<CreateIndirectDataForwardingTunnelRequestBearerContext> getBearerContext() 
 	{
 		return bearerContext;
 	}
 
 	@Override
-	public void setBearerContext(BearerContext bearerContext) 
+	public void setBearerContext(List<CreateIndirectDataForwardingTunnelRequestBearerContext> bearerContext) 
 	{
-		bearerContext.setInstance(0);
+		if(bearerContext!=null)
+			for(CreateIndirectDataForwardingTunnelRequestBearerContext curr:bearerContext)				
+				curr.setInstance(0);
+		
 		this.bearerContext=bearerContext;
 	}
 
