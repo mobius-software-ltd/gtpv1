@@ -47,7 +47,7 @@ public class EncodingTest
 	                    	byte[] destination=new byte[original.length];
 	                    	ByteBuf destBuffer=Unpooled.wrappedBuffer(destination);
 	                        destBuffer.resetWriterIndex();
-	                        GenericGTPMessage message=MessageFactory.decode(nettyBuffer);
+	                        GenericGTPMessage message=MessageFactory.decode(nettyBuffer,true);
 	                        message.encode(destBuffer);
 	                        byte[] destination2=new byte[original.length];
 	                    	ByteBuf dest2Buffer=Unpooled.wrappedBuffer(destination2);

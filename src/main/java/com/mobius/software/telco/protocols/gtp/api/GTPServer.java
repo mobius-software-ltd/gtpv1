@@ -32,4 +32,6 @@ public interface GTPServer
 	void stop();
 	
 	void setListener(GTPListener listener);
+	
+	void setIgnoreUnknown(Boolean ignoreUnknown);
 }

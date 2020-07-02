@@ -23,14 +23,14 @@ import com.mobius.software.telco.protocols.gtp.impl.messages.v2.GTP2MessageFacto
 
 public class MessageFactory 
 {
-	public static GenericGTPMessage decode(ByteBuf buffer) throws GTPParseException
+	public static GenericGTPMessage decode(ByteBuf buffer,Boolean ignoreUnknown) throws GTPParseException
 	{
 		byte currByte=buffer.readByte();
 		Integer protocol=(currByte>>5)&0x07;	
 		if(protocol==1)
-			return GTPMessageFactory.decode(currByte, buffer);
+			return GTPMessageFactory.decode(currByte, buffer,ignoreUnknown);
 		else if(protocol==2)
-			return GTP2MessageFactory.decode(currByte, buffer);		
+			return GTP2MessageFactory.decode(currByte, buffer, ignoreUnknown);		
 		else
 			throw new GTPParseException("Invalid message protocol version");
 	}

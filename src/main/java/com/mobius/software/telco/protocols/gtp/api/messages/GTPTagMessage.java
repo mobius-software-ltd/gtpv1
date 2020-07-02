@@ -31,5 +31,5 @@ public interface GTPTagMessage extends GenericGTPMessage
 	
 	List<TLV1> getTLVs() throws GTPParseException;
 	
-	void applyTLV(TLV1 tlv) throws GTPParseException;
+	void applyTLV(TLV1 tlv,Boolean ignoreUnknown) throws GTPParseException;
 }

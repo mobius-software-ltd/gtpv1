@@ -252,7 +252,7 @@ public class GTPUMessage implements GTPMessage
 	}
 	
 	@Override
-	public void applyTLV(TLV1 tlv) throws GTPParseException
+	public void applyTLV(TLV1 tlv,Boolean ignoreUnknown) throws GTPParseException
 	{
 		
 	}
@@ -299,7 +299,7 @@ public class GTPUMessage implements GTPMessage
 	}
 	
 	@Override
-	public void decode(ByteBuf buffer) throws GTPParseException 
+	public void decode(ByteBuf buffer,Boolean ignoreUnknown) throws GTPParseException 
 	{
 		int length=buffer.readUnsignedShort();
 		length-=readExtraHeaders(buffer);

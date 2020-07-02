@@ -24,7 +24,7 @@ import com.mobius.software.telco.protocols.gtp.api.messages.GenericGTPMessage;
 
 public class GTPMessageFactory 
 {
-	public static GenericGTPMessage decode(byte header,ByteBuf buffer) throws GTPParseException
+	public static GenericGTPMessage decode(byte header,ByteBuf buffer,Boolean ignoreUnknown) throws GTPParseException
 	{
 		GenericGTPMessage gtpMessage=null;
 		ProtocolType packetType=ProtocolType.fromInt((header >>4) & 0x01);
@@ -775,7 +775,7 @@ public class GTPMessageFactory
 		}
 		
 		gtpMessage.applyHeaderByte((byte)(header & 0x0F));
-		gtpMessage.decode(buffer);
+		gtpMessage.decode(buffer,ignoreUnknown);
 		return gtpMessage;
 	}
 }

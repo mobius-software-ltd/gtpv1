@@ -56,6 +56,8 @@ public class GTPServerImpl implements GTPServer
 	
 	private GTPListener listener=null;
 	
+	private Boolean ignoreUnknown=false;
+	
 	@Override
 	public void start(String host,Integer port,Integer poolSize,Boolean useEpoll) 
 	{
@@ -151,5 +153,16 @@ public class GTPServerImpl implements GTPServer
 		}
 		else
 			logger.warn("Received incoming message,but no listener is set yet");
+	}
+
+	@Override
+	public void setIgnoreUnknown(Boolean ignoreUnknown) 
+	{
+		this.ignoreUnknown=ignoreUnknown;
+	}
+	
+	public Boolean getIgnoreUnknown()
+	{
+		return this.ignoreUnknown;
 	}
 }

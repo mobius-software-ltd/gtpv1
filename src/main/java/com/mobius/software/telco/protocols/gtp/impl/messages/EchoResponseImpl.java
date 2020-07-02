@@ -37,7 +37,7 @@ public class EchoResponseImpl extends AbstractGTPMessage implements EchoResponse
 	}
 
 	@Override
-	public void applyTLV(TLV1 tlv) throws GTPParseException 
+	public void applyTLV(TLV1 tlv,Boolean ignoreUnknown) throws GTPParseException 
 	{
 		switch(tlv.getElementType())
 		{
@@ -51,7 +51,8 @@ public class EchoResponseImpl extends AbstractGTPMessage implements EchoResponse
 				privateExtentions.add((PrivateExtention)tlv);
 				break;
 			default:
-				throw new GTPParseException("Unknown TLV received,type:" + tlv.getElementType());
+				if(ignoreUnknown==null || !ignoreUnknown)
+					throw new GTPParseException("Unknown TLV received,type:" + tlv.getElementType());
 		}
 	}
 

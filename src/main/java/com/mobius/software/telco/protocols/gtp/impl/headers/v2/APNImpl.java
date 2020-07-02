@@ -15,11 +15,14 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>*/
+import io.netty.buffer.ByteBuf;
+
+import com.mobius.software.telco.protocols.gtp.api.exceptions.MissingArgumentException;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.APN;
 import com.mobius.software.telco.protocols.gtp.api.headers.v2.GTP2ElementType;
 
 
-public class APNImpl extends AbstractStringTLV implements APN 
+public class APNImpl extends AbstractTLV2 implements APN 
 {
 	private String apn;
 	
@@ -40,16 +43,48 @@ public class APNImpl extends AbstractStringTLV implements APN
 	{
 		this.apn=apn;
 	}
-
+	
 	@Override
-	public String getString() 
+	public Integer getLength() 
 	{
-		return apn;
+		Integer length=1;
+		if(apn!=null)
+			length+=apn.length();
+		
+		return length;
 	}
 
 	@Override
-	public void setString(String value) 
+	protected void writeValue(ByteBuf buffer) throws MissingArgumentException 
 	{
-		this.apn=value;
+		if(apn!=null)
+		{
+			String[] segments=apn.split("\\.");			
+			for(String curr:segments)
+			{
+				buffer.writeByte(curr.length());
+				buffer.writeBytes(curr.getBytes());
+			}
+		}
+		else
+			throw new MissingArgumentException("APN not set");
+	}
+
+	@Override
+	protected void readValue(ByteBuf buffer, Integer length) 
+	{
+		byte[] data=new byte[length];
+		buffer.readBytes(data);
+		int currIndex=0;
+		this.apn="";
+		while(currIndex<data.length)
+		{
+			int currLength=data[currIndex++] & 0x0FF;
+			if(this.apn.length()>0)
+				this.apn+=".";
+			
+			this.apn+=new String(data,currIndex,currLength);
+			currIndex+=currLength;
+		}
 	}
 }

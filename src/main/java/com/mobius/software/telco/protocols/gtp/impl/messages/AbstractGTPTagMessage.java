@@ -133,13 +133,13 @@ public abstract class AbstractGTPTagMessage implements GTPTagMessage
 	}
 
 	@Override
-	public abstract void applyTLV(TLV1 tlv) throws GTPParseException;
+	public abstract void applyTLV(TLV1 tlv,Boolean ignoreUnknown) throws GTPParseException;
 	
 	@Override
 	public abstract List<TLV1> getTLVs() throws GTPParseException;
 
 	@Override
-	public void decode(ByteBuf buffer) throws GTPParseException 
+	public void decode(ByteBuf buffer,Boolean ignoreUnknown) throws GTPParseException 
 	{
 		int length=buffer.readUnsignedShort();
 		length-=readExtraHeaders(buffer);
@@ -148,7 +148,7 @@ public abstract class AbstractGTPTagMessage implements GTPTagMessage
 			TLV1 currTLV=TLVFactory.decode(buffer);
 			if(currTLV!=null)
 			{
-				applyTLV(currTLV);
+				applyTLV(currTLV,ignoreUnknown);
 				original.add(currTLV);
 			}
 			

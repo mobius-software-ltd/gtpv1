@@ -35,7 +35,7 @@ public class ForwardRelocationCompleteImpl extends AbstractGTPMessage implements
 	}
 
 	@Override
-	public void applyTLV(TLV1 tlv) throws GTPParseException 
+	public void applyTLV(TLV1 tlv,Boolean ignoreUnknown) throws GTPParseException 
 	{
 		switch(tlv.getElementType())
 		{
@@ -46,7 +46,8 @@ public class ForwardRelocationCompleteImpl extends AbstractGTPMessage implements
 				privateExtentions.add((PrivateExtention)tlv);
 				break;
 			default:
-				throw new GTPParseException("Unknown TLV received,type:" + tlv.getElementType());
+				if(ignoreUnknown==null || !ignoreUnknown)
+					throw new GTPParseException("Unknown TLV received,type:" + tlv.getElementType());
 		}
 	}
 

@@ -23,7 +23,7 @@ import com.mobius.software.telco.protocols.gtp.api.messages.GenericGTPMessage;
 
 public class GTP2MessageFactory 
 {
-	public static GenericGTPMessage decode(byte header,ByteBuf buffer) throws GTPParseException
+	public static GenericGTPMessage decode(byte header,ByteBuf buffer,Boolean ignoreUnknown) throws GTPParseException
 	{
 		GenericGTPMessage gtpMessage=null;
 		GTP2MessageType messageType=GTP2MessageType.fromInt(buffer.readByte());
@@ -339,7 +339,7 @@ public class GTP2MessageFactory
 		}
 		
 		gtpMessage.applyHeaderByte((byte)(header & 0x0F));
-		gtpMessage.decode(buffer);
+		gtpMessage.decode(buffer,ignoreUnknown);
 		return gtpMessage;
 	}
 }

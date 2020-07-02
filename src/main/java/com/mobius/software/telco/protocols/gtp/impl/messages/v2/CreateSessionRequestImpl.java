@@ -145,7 +145,7 @@ public class CreateSessionRequestImpl extends AbstractGTP2Message implements Cre
 	}
 
 	@Override
-	public void applyTLV(TLV2 tlv) throws GTPParseException 
+	public void applyTLV(TLV2 tlv,Boolean ignoreUnknown) throws GTPParseException 
 	{
 		switch(tlv.getElementType())
 		{		
@@ -414,7 +414,8 @@ public class CreateSessionRequestImpl extends AbstractGTP2Message implements Cre
 				privateExtentions.add((PrivateExtention)tlv);
 				break;
 			default:
-				throw new GTPParseException("Unknown TLV received,type:" + tlv.getElementType());
+				if(ignoreUnknown==null || !ignoreUnknown)
+					throw new GTPParseException("Unknown TLV received,type:" + tlv.getElementType());
 		}
 	}
 

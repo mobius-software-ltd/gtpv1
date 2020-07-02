@@ -217,7 +217,7 @@ public abstract class AbstractGTP2Message implements GTP2Message
 	}
 	
 	@Override
-	public void decode(ByteBuf buffer) throws GTPParseException 
+	public void decode(ByteBuf buffer,Boolean ignoreUnknown) throws GTPParseException 
 	{
 		int length=buffer.readUnsignedShort();
 		length-=readExtraHeaders(buffer);
@@ -226,7 +226,7 @@ public abstract class AbstractGTP2Message implements GTP2Message
 			TLV2 currTLV=TLV2Factory.decode(getMessageType(), buffer);
 			if(currTLV!=null)
 			{
-				applyTLV(currTLV);
+				applyTLV(currTLV,ignoreUnknown);
 				originalTLVs.add(currTLV);
 			}
 			
@@ -235,7 +235,7 @@ public abstract class AbstractGTP2Message implements GTP2Message
 	}
 
 	@Override
-	public abstract void applyTLV(TLV2 tlv) throws GTPParseException;
+	public abstract void applyTLV(TLV2 tlv,Boolean ignoreUnknown) throws GTPParseException;
 
 	@Override
 	public abstract List<TLV2> getTLVs() throws GTPParseException;

@@ -25,8 +25,10 @@ import com.mobius.software.telco.protocols.gtp.impl.messages.MessageFactory;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.util.ReferenceCountUtil;
 
+@Sharable
 public class GTPPacketHandler extends SimpleChannelInboundHandler<DatagramPacket>
 {
 	private final static Logger logger = Logger.getLogger(GTPPacketHandler.class);  
@@ -46,7 +48,7 @@ public class GTPPacketHandler extends SimpleChannelInboundHandler<DatagramPacket
 			try
 			{
 				InetSocketAddress address = packet.sender();
-				GenericGTPMessage message=MessageFactory.decode(packet.content());
+				GenericGTPMessage message=MessageFactory.decode(packet.content(),server.getIgnoreUnknown());
 				server.packetReceived(message, address);
 			}
 			catch(Exception ex)

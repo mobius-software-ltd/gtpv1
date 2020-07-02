@@ -31,7 +31,7 @@ public interface GenericGTPMessage
 	
 	void encodeOriginal(ByteBuf buffer) throws GTPParseException;
 	
-	void decode(ByteBuf buffer) throws GTPParseException;
+	void decode(ByteBuf buffer,Boolean ignoreUnknown) throws GTPParseException;
 	
 	void applyHeaderByte(byte value);	
 }

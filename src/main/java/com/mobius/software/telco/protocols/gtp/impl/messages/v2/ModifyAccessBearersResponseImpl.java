@@ -49,7 +49,7 @@ public class ModifyAccessBearersResponseImpl extends AbstractGTP2Message impleme
 	}
 
 	@Override
-	public void applyTLV(TLV2 tlv) throws GTPParseException 
+	public void applyTLV(TLV2 tlv,Boolean ignoreUnknown) throws GTPParseException 
 	{
 		switch(tlv.getElementType())
 		{		
@@ -72,7 +72,8 @@ public class ModifyAccessBearersResponseImpl extends AbstractGTP2Message impleme
 						bearerContextMarkedForRemoved.add((ModifyAccessBearerResponseBearerContextToBeRemoved)tlv);
 						break;
 					default:
-						throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
+						if(ignoreUnknown==null || !ignoreUnknown)
+							throw new GTPParseException("Invalid TLV instance ID received,type:" + tlv.getElementType() + ",ID:" + tlv.getInstance());
 				}
 				break;
 			case RECOVERY:

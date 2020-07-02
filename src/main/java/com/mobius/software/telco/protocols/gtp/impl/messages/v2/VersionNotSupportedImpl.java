@@ -32,12 +32,13 @@ public class VersionNotSupportedImpl extends AbstractGTP2Message implements Vers
 	}
 
 	@Override
-	public void applyTLV(TLV2 tlv) throws GTPParseException 
+	public void applyTLV(TLV2 tlv,Boolean ignoreUnknown) throws GTPParseException 
 	{
 		switch(tlv.getElementType())
 		{
 			default:
-				throw new GTPParseException("Unknown TLV received,type:" + tlv.getElementType());
+				if(ignoreUnknown==null || !ignoreUnknown)
+					throw new GTPParseException("Unknown TLV received,type:" + tlv.getElementType());
 		}
 	}
 

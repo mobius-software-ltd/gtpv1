@@ -44,5 +44,5 @@ public interface GTP2Message extends GenericGTPMessage
 	
 	List<TLV2> getTLVs() throws GTPParseException;
 	
-	void applyTLV(TLV2 tlv) throws GTPParseException;		
+	void applyTLV(TLV2 tlv,Boolean ignoreUnknown) throws GTPParseException;		
 }
