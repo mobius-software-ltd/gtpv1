@@ -42,7 +42,7 @@ public class SelectionModeImpl extends AbstractTLV2 implements SelectionMode
 	protected void writeValue(ByteBuf buffer) throws MissingArgumentException 
 	{
 		if(modeType!=null)
-			buffer.writeByte(modeType.getValue() & 0x03);
+			buffer.writeByte((modeType.getValue() & 0x03) | 0x0FC);
 		else
 			throw new MissingArgumentException("Selection Mode is not set");
 	}
