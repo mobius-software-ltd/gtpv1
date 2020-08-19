@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>impl</artifactId>
 	<groupId>com.mobius-software.telco.protocols.gtp</groupId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>gtp-impl</name>
 	<description>GTP Implementation</description>
 	<packaging>jar</packaging>
@@ -17,7 +17,7 @@
 		<url>https://github.com/mobius-software-ltd/gtpv1</url>
 		<connection>scm:git:git://github.com:mobius-software-ltd/gtpv1.git</connection>
 		<developerConnection>scm:git:git@github.com:mobius-software-ltd/gtpv1.git</developerConnection>
-		<tag>impl-1.0.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<licenses>
